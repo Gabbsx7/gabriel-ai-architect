@@ -1,32 +1,57 @@
-# Gabriel's AI Architecture Showcase: Sovereign Agentic OS 🐝
+# Gabriel Sant'Ana — Enterprise AI Architect & Agentic Systems Builder 🐝
 
-> **Available for Freelance & Consulting** > *I build production-grade, secure, and sovereign AI infrastructure for enterprises.*
+> **Available for Freelance, Consulting & Architecture Roles**
+> *I build production-grade, secure, and sovereign AI infrastructure for enterprises that cannot compromise on data privacy.*
 
-Most AI projects stop at a LangChain API wrapper. This repository is a showcase of **Enterprise-Grade AI Infrastructure**. It demonstrates how to build, deploy, and observe autonomous AI agents (LangGraph, CrewAI) in highly regulated environments (Fintech, Health, Government) using **Sovereign Deployments** (On-Premise / Private Cloud).
+Most AI projects stop at a LangChain API wrapper. This repository is a showcase of **Enterprise-Grade AI Infrastructure**. It demonstrates how to build, deploy, and observe autonomous AI agents (using LangGraph/CrewAI) in highly regulated environments (Fintech, Healthcare, B2B) using **Sovereign Deployments** (On-Premise / Private Cloud).
 
----
-
-## 🏗️ Architecture Highlights
-
-This repository contains sanitized, production-ready code snippets and architecture patterns I use in real-world deployments.
-
-* **🔒 Sovereign & Secure by Default:** * Automated HashiCorp Vault initialization for secret management (`setup.py`).
-    * WireGuard secure tunnels for isolated network traffic.
-    * Runtime validation of agent actions via a strict `constitution.yaml`.
-* **🧠 Persistent Semantic Memory:** * Custom `@memory` decorators injecting `pgvector` and `nomic-embed-text` context directly into the agent's workflow. 
-    * Agents learn from past executions over time without requiring expensive model fine-tuning.
-* **👁️ Enterprise Observability:** * Every agent action and tool call is automatically traced using **OpenTelemetry (OTel)**.
-    * Immutable audit logs for compliance in regulated sectors.
-* **🚀 Developer Experience (DX):**
-    * A robust Typer-based CLI (`antz init`, `antz run`) for scaffolding agent colonies in seconds.
-    * Elegant Python decorators (`@agent`, `@tool`) that abstract away complex telemetry, memory retrieval, and API boundaries.
+As the Founder of Ant'z Studio and a Partner at a financial advisory boutique, I bridge the gap between complex engineering and actual business ROI. I have a track record of building systems that process millions of sensitive records (2M+ fiscal documents processed in past ventures) and driving direct revenue through AI automation.
 
 ---
 
-## 💻 Show me the code
+## 📈 Real-World ROI: The LV Capital Case Study
 
-### 1. The Elegant SDK (Decorators Pattern)
-I design SDKs that make developers' lives easier. Notice how OpenTelemetry, memory retrieval, and constitution validation are abstracted behind clean decorators:
+I don't just write scripts; I build systems that generate revenue. 
+
+I recently deployed an autonomous LangGraph SDR (Sales Development Representative) colony for LV Capital Partners. 
+By implementing an intelligent triage agent and a persistent semantic memory layer (allowing the AI to learn optimal phrasing from past interactions without fine-tuning), we achieved:
+
+* **372% Increase in Response Rate** (from 4.5% to 21.25%)
+* **89% Reduction in Operational Costs**
+* **Zero Data Leakage** (Fully isolated execution environment)
+
+---
+
+## 🏗️ Architecture Pillars
+
+This repository contains sanitized, production-ready code snippets and architecture patterns I use in real-world deployments. It reflects the core philosophy of a **Sovereign Agentic OS**.
+
+### 1. 🔒 Sovereign & Secure by Default
+Designed for strict compliance (EU AI Act, LGPD, HIPAA, BACEN).
+* **HashiCorp Vault Integration:** Automated initialization for secret management (`setup.py`).
+* **Air-gapped Capable:** Support for local LLMs (Ollama, vLLM).
+* **WireGuard Tunnels:** Secure, isolated network traffic for remote nodes.
+* **Runtime Constitution:** Agent actions are validated against a strict `constitution.yaml` before execution to prevent unauthorized operations.
+
+### 2. 🧠 Persistent Semantic Memory (RAG 2.0)
+Agents shouldn't have amnesia. 
+* Uses **pgvector** and `nomic-embed-text` to create granular semantic memory namespaces.
+* Custom `@memory` and `@outcome` decorators automatically inject historical context into the agent's prompt and score past successes. Agents continuously improve based on real business outcomes.
+
+### 3. 👁️ Enterprise Observability & Audit
+* Every agent action and tool call is automatically traced using **OpenTelemetry (OTel)**.
+* **Immutable Cryptographic Audit Trails:** Every LLM decision and tool execution is logged in a PostgreSQL append-only hash chain. You always know *why* the AI made a decision.
+
+### 4. 🚀 Advanced Orchestration
+* **LangGraph in Production:** Complex state graphs with conditional routing (`should_continue`), human-in-the-loop triggers, and anti-ban pause nodes for messaging APIs.
+* **Asynchronous FastAPI:** Non-blocking background tasks and concurrency prevention for multi-tenant SaaS environments.
+
+---
+
+## 💻 Code Showcase Highlights
+
+### The Elegant SDK (Decorators Pattern)
+I design code that is clean and maintainable. Notice how OpenTelemetry, memory retrieval, and constitution validation are seamlessly abstracted behind Python decorators:
 
 ```python
 from antz import agent, tool, memory
@@ -37,42 +62,30 @@ def lookup_data(query: str) -> dict:
     return {"data": f"mock result for: {query}", "confidence": 0.9}
 
 @agent("analyst-v1")
-@memory(namespace="financial", hive=HiveMode.ISOLATED) # Memory never leaves the local Nest
+@memory(namespace="financial", hive=HiveMode.ISOLATED) # Memory never leaves the local infrastructure
 def run_agent(input_data: dict, memory_context: list = None) -> dict:
     # memory_context is auto-populated with relevant past runs!
     past = memory_context or []
     result = lookup_data(str(input_data))
     
     return {"status": "success", "result": result}
-2. One-Command Sovereign Deployment
-I don't just write AI scripts; I deploy infrastructure. The setup.py in this repo provisions a full "Nest":
+```
 
-Checks Python/Docker prerequisites.
+## Sovereign Deployment
+The docker-compose.yml included in this showcase proves deployment maturity, orchestrating Vault (with IPC_LOCK), PostgreSQL (pgvector), LiteLLM, and Ollama in a single cohesive stack.
 
-Generates PostgreSQL passwords and WireGuard keypairs.
+## 🤝 Let's Work Together
+I am open to high-impact freelance projects, architectural consulting, and strategic B2B deployments.
 
-Spins up the Docker Compose stack (Vault, LiteLLM, Ollama, pgvector).
+## How I can help your team:
 
-Unseals HashiCorp Vault automatically.
+* Agent Orchestration: Designing and deploying robust multi-agent workflows (LangGraph/CrewAI).
 
-Pulls local LLMs for air-gapped execution.
+* Sovereign AI Infrastructure: Setting up secure, local LLMs and vector databases on your Azure, AWS, or On-Premise servers.
 
-📈 Real-World Results
-I apply these architectural principles to solve actual business problems.
+* AI Security & Governance: Implementing HashiCorp Vault, immutable audit logs, and OpenTelemetry.
 
-Case Study: Built an autonomous SDR pipeline using memory-augmented agents for a financial advisory boutique, resulting in a 4x increase in response rates. The agents learned optimal phrasing based on historical successes without any manual retraining.
+* Multi-Tenant SaaS Backends: Building fast, scalable control planes using FastAPI and Stripe.
 
-🤝 Let's Work Together
-I am a specialized AI Infrastructure Architect open to freelance projects, consulting, and B2B deployments.
-
-I can help your team with:
-
-Agent Orchestration: Building complex, multi-agent workflows using LangGraph or CrewAI.
-
-Sovereign AI Deployment: Setting up local LLMs (Ollama, vLLM) and vector databases on your own servers (Azure, AWS, On-Prem).
-
-AI Security & Compliance: Implementing HashiCorp Vault, immutable audit logs, and OpenTelemetry.
-
-Multi-Tenant AI Platforms: Control planes, Stripe integration, and dynamic provisioning.
-
-📫 Contact me on Upwork or LinkedIn to discuss your project.
+📫 Reach out on [Upwork] or [LinkedIn] to discuss your project.
+Check out my overarching vision for enterprise AI at [https://antz.studio]
