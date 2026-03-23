@@ -1,0 +1,60 @@
+---
+- name: Ant'z Nest — One-command Sovereign Provisioning
+  hosts: nest
+  become: yes
+  vars:
+    repo_url: "https://github.com/Gabbsx7/antz-studio-aos.git"
+    nest_dir: "/opt/antz-nest"
+
+  tasks:
+    - name: Update system packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install base dependencies
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - wireguard
+          - iproute2
+          - git
+          - python3
+          - python3-pip
+          - docker.io
+          - docker-compose-plugin
+        state: present
+
+    - name: Clone Ant'z repository
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ nest_dir }}"
+        force: yes
+
+    - name: Configure WireGuard tunnel
+      copy:
+        content: "{{ wg_config | default('') }}"
+        dest: /etc/wireguard/wg0.conf
+        mode: '0600'
+      when: wg_config is defined
+
+    - name: Enable and start WireGuard
+      systemd:
+        name: wg-quick@wg0
+        enabled: yes
+        state: started
+      when: wg_config is defined
+
+    - name: Run full Nest setup
+      shell: cd {{ nest_dir }} && python3 setup.py
+      async: 600
+      poll: 10
+      register: setup_result
+
+    - name: Show setup result
+      debug:
+        msg: "Nest provisioning completed successfully!"
+      when: setup_result is succeeded

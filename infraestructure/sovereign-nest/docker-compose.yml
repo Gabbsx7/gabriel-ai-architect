@@ -1,0 +1,93 @@
+version: '3.9'
+
+services:
+  # ── Cryptographic Vault (Secrets Management) ───────────────────────────────
+  vault:
+    image: hashicorp/vault:1.15
+    container_name: antz-vault
+    restart: always
+    volumes:
+      - ./vault/config.hcl:/vault/config/config.hcl
+      - vault-data:/vault/file
+    cap_add:
+      - IPC_LOCK
+    command: server -config=/vault/config/config.hcl
+    healthcheck:
+      test: ["CMD-SHELL", "vault status -address=http://127.0.0.1:8200"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Vault Agent (auto-unseal + secret rendering) ────────────────────────────
+  vault-agent:
+    image: hashicorp/vault:1.15
+    container_name: antz-vault-agent
+    restart: on-failure
+    volumes:
+      - ./scripts/vault-unseal.sh:/scripts/vault-unseal.sh
+      - ./security:/secrets
+    depends_on:
+      vault:
+        condition: service_healthy
+
+  # ── Immutable Audit Database (PostgreSQL + pgvector) ────────────────────────
+  audit-db:
+    image: pgvector/pgvector:pg16
+    container_name: antz-audit-db
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - audit-data:/var/lib/postgresql/data
+      - ./scripts/init-audit-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U antz_admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Model Abstraction Layer (LiteLLM) ───────────────────────────────────────
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    container_name: antz-litellm
+    restart: always
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./config/litellm-config.yaml:/app/config.yaml
+    command: --config /app/config.yaml
+
+  # ── Local LLM + Embeddings (Ollama) ─────────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: antz-ollama
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+
+  # ── Hive (Central Intelligence Layer) ───────────────────────────────────────
+  hive:
+    build:
+      context: ../hive
+      dockerfile: Dockerfile
+    container_name: antz-hive
+    restart: always
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    depends_on:
+      - audit-db
+      - litellm
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8001/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  vault-data:
+  audit-data:
+  ollama-data:
