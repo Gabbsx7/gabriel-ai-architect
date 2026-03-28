@@ -88,4 +88,4 @@ I am open to high-impact freelance projects, architectural consulting, and strat
 * Multi-Tenant SaaS Backends: Building fast, scalable control planes using FastAPI and Stripe.
 
 📫 Reach out on [Upwork] or [LinkedIn] to discuss your project.
-Check out my overarching vision for enterprise AI at [https://antz.studio]
+Check out my overarching vision for enterprise AI at Ant'z Studio[https://antz.studio]
